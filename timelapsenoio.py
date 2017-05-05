@@ -8,7 +8,6 @@ import RPi.GPIO as GPIO
 import getpass
 
 uname=getpass.getuser()
-
 GPIO.setmode(GPIO.BCM)
 red = 18
 green = 17
@@ -33,9 +32,9 @@ booboo=picamera.PiCamera()
 #5444booboo.vflip=True;
 
 
-title="goop"+str(datetime.datetime.now())
-duration=30
-unterval=5
+title="night"+str(datetime.datetime.now())
+duration=1600
+unterval=240
 starttime=datetime.datetime.now();
 
 cch=0
