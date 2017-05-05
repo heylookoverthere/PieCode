@@ -44,7 +44,7 @@ normmessages.append("It was so I wouldn't go grabbing at soft fleshy things befo
 normmessages.append("I am Mr. Face and this is the last thing I know how to say. If you keep hitting the button I'll just repeat myself.")
 
 pie=getpass.getuser()
-apath="/home/"+pie+"/papi/"
+apath="/home/"+pie+"/PieCode/papi/"
 
 def wakeface(fakeit):
     if fakeit:

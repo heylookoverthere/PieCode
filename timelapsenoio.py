@@ -34,7 +34,7 @@ booboo=picamera.PiCamera()
 
 title="night"+str(datetime.datetime.now())
 duration=1600
-unterval=240
+unterval=120
 starttime=datetime.datetime.now();
 
 cch=0
