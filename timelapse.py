@@ -5,15 +5,9 @@ import picamera
 from time import sleep
 import datetime
 import RPi.GPIO as GPIO
+import getpass
 
-if "y"!=str(raw_input("before we fry everything, are you sure the breadboard is wired correctly? <y/n>")):
-    print "TOO BAD!"
-    sleep(2)
-    print "just kidding try again."
-    exit();
-else:
-    print "...if you say so."
-
+auser=getpass.getuser()
 
 GPIO.setmode(GPIO.BCM)
 red = 18
@@ -59,7 +53,7 @@ for i in xrange(0,duration):
     GREEN.ChangeDutyCycle(10)
     BLUE.ChangeDutyCycle(10)
     sleep(3)
-    booboo.capture("/home/pi/pypics/"+title+str(i)+".jpg")
+    booboo.capture("/home/"+auser+"/pypics/"+title+str(i)+".jpg")
     RED.ChangeDutyCycle(0)
     GREEN.ChangeDutyCycle(100)
     BLUE.ChangeDutyCycle(0)

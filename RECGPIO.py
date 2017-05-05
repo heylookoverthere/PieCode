@@ -5,6 +5,9 @@ from time import sleep
 import datetime
 import RPi.GPIO as GPIO
 import sys
+import getpass
+
+auser=getpass.getuser()
 
 booboo=picamera.PiCamera()
 booboo.vflip=True
@@ -36,7 +39,7 @@ if (GPIO.(23) and not galf):
     title="REC"+str(datetime.datetime.now())
     length=45
 
-    fulltitle=title+".h264"
+    fulltitle="/home/"+auser+"/"+title+".h264"
 
     starttime=datetime.datetime.now();
 

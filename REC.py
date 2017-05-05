@@ -5,12 +5,13 @@ from time import sleep
 import datetime
 import RPi.GPIO as GPIO
 import sys
+import getpass
 
 booboo=picamera.PiCamera()
 booboo.vflip=True
 
-
-title="REC"+str(datetime.datetime.now())
+auser=getpass.getuser()
+title="home/"+auser+"/pypics/REC"+str(datetime.datetime.now())
 length=int(raw_input("How long in seconds?"))
 
 fulltitle=title+".h264"

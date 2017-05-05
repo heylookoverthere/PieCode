@@ -5,6 +5,9 @@ from time import sleep
 import datetime
 import RPi.GPIO as GPIO
 import sys
+import getpass
+
+auser=getpass.getuser()
 
 booboo=picamera.PiCamera()
 booboo.vflip=True
@@ -31,7 +34,7 @@ BLUE.start(0)
 title="REC"+str(datetime.datetime.now())
 length=45
 
-fulltitle=title+".h264"
+fulltitle="/home/"+auser+"/"+title+".h264"
 
 starttime=datetime.datetime.now();
 

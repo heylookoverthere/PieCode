@@ -2,9 +2,11 @@ import RPi.GPIO as GPIO
 import picamera
 from time import sleep
 import datetime
-
+import getpass
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(23,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)
+
+auser=getpass.getuser()
 
 booboo=picamera.PiCamera()
 #booboo.vflip=True
@@ -21,7 +23,7 @@ try:
         if (boop>62) and GPIO.input(23):
             print "Motion detected at ",datetime.datetime.now()
             lastmotion=datetime.datetime.now()
-            title="motmov"+str(lastmotion)
+            title="/home/"+auser+"/pypics/"+"motmov"+str(lastmotion)
             fulltitle=title+".h264"
             booboo.start_recording(fulltitle,format='h264')
             sleep(60)

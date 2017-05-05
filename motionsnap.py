@@ -19,7 +19,7 @@ try:
             print "Motion detected at ",datetime.datetime.now()
             lastmotion=datetime.datetime.now()
             title="mot"+str(boop)
-            booboo.capture("/home/pi/pypics/"+title+".jpg")
+            booboo.capture("/home"+auser+"/pypics/"+title+".jpg")
 	
 finally:
     GPIO.cleanup();
