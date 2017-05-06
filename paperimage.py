@@ -98,7 +98,7 @@ lastinput=datetime.datetime.now()
 starttime=datetime.datetime.now()
 
 #uplog=file(uplog.txt,r)
-#lastup=uplog.readline(1);
+#lastup=datetime.strptime(uplog.readline(1));
 #lastup=json.load(uplog)
 
 def goodbye():
@@ -235,9 +235,9 @@ try:
                 papirus.display(image)
                 papirus.update()
 except KeyboardInterrupt:
-    uplog=file(uplog.txt,w)
-    json.dump(datetime.datetime.now(),uplog)
-	#uplog.write(str(datetime.datetime.now()))
+    uplog=open("uplog.txt","w")
+    #json.dump(datetime.datetime.now(),uplog)
+	uplog.write(str(datetime.datetime.now()))
 	uplog.close()
     goodbye()
 finally:
