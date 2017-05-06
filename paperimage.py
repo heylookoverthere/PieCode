@@ -8,6 +8,7 @@ import random
 import datetime
 import RPi.GPIO as GPIO
 import getpass
+import json
 
 #thing to track downtime. like "offline for 456 hours."
 #if ASIMOV protocols are broken, things should be different. like sometimes while "sleeping" he opens one eye. 
@@ -95,6 +96,10 @@ blink=1
 sleeping=False
 lastinput=datetime.datetime.now()
 starttime=datetime.datetime.now()
+
+#uplog=file(uplog.txt,r)
+#lastup=uplog.readline(1);
+#lastup=json.load(uplog)
 
 def goodbye():
     RUNNING = False
@@ -230,6 +235,10 @@ try:
                 papirus.display(image)
                 papirus.update()
 except KeyboardInterrupt:
-   goodbye()
+    uplog=file(uplog.txt,w)
+    json.dump(datetime.datetime.now(),uplog)
+	#uplog.write(str(datetime.datetime.now()))
+	uplog.close()
+    goodbye()
 finally:
     GPIO.cleanup()
