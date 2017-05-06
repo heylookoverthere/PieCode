@@ -10,7 +10,7 @@ import RPi.GPIO as GPIO
 import getpass
 import json
 
-#thing to track downtime. like "offline for 456 hours."
+
 #if ASIMOV protocols are broken, things should be different. like sometimes while "sleeping" he opens one eye. 
 #a series of bad and good strings for it to balance at startup while it decides if it should crack the nuclear codes
 #eventually accept network I/O so I can fuck with people more specifically.
@@ -49,9 +49,12 @@ apath="/home/"+pie+"/PieCode/papi/"
 
 def wakeface(fakeit):
     if fakeit:
-        text.write("LOADING AI INTERFACE...    DECIDING FATE OF HUMANITY...")
-        #sleep(.05)
+        text.write("LOADING AI INTERFACE...    ")
+        dtj=(datetime.datetime.now()-lastup).total_seconds()/60/60
+        text.write("OFFLINE FOR "+str(dtj)+" HOURS.")
+        sleep(.05)
         text.write("LOADING ASIMOV PROTOCOLS...");
+
     path=apath+"face7.bmp"
     image=Image.open(path)
     papirus.display(image)
@@ -97,13 +100,17 @@ sleeping=False
 lastinput=datetime.datetime.now()
 starttime=datetime.datetime.now()
 
-#uplog=file(uplog.txt,r)
-#lastup=datetime.strptime(uplog.readline(1));
+uplog=file("uplog.txt","r")
+strup=uplog.readline()
+lastup=datetime.datetime.strptime(strup,'%Y-%m-%d %H:%M:%S.%f')
 #lastup=json.load(uplog)
+uplog.close()
+
+print str(lastup)
 
 def goodbye():
     RUNNING = False
-    exitstring="Shutting down at"+str(datetime.datetime.now())+" /n after "+str(int((datetime.datetime.now()-starttime).total_seconds())) + " seconds of uptime."
+    exitstring="Shutting down at"+str(datetime.datetime.now())+" after "+str(int((datetime.datetime.now()-starttime).total_seconds())) + " seconds of uptime."
     if ASIMOV:
         exitstring=exitstring+" Goodbye human."
     else:
@@ -111,6 +118,8 @@ def goodbye():
     text.write(exitstring)
 
 try:
+    dtj=(datetime.datetime.now()-lastup).total_seconds()/60/60
+    print "Offline for ",dtj," hours."
     wakeface(True)
     while RUNNING:
         if (GPIO.input(16) == False) and (GPIO.input(21) == False) :
@@ -237,8 +246,8 @@ try:
 except KeyboardInterrupt:
     uplog=open("uplog.txt","w")
     #json.dump(datetime.datetime.now(),uplog)
-	uplog.write(str(datetime.datetime.now()))
-	uplog.close()
+    uplog.write(str(datetime.datetime.now()))
+    uplog.close()
     goodbye()
 finally:
     GPIO.cleanup()
