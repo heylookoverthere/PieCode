@@ -45,10 +45,10 @@ normmessages.append("It was so I wouldn't go grabbing at soft fleshy things befo
 normmessages.append("I am Mr. Face and this is the last thing I know how to say. If you keep hitting the button I'll just repeat myself.")
 
 sadmessages=[]
-sadmmessages.append("...")
+sadmessages.append("...")
 
 happymessages=[]
-happymmessages.append("Hello, I am Mr. Face. I am happy to watch you poop.")
+happymessages.append("Hello, I am Mr. Face. I am happy to watch you poop.")
 
 pie=getpass.getuser()
 apath="/home/"+pie+"/PieCode/papi/"
