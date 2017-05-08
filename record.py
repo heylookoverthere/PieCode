@@ -1,9 +1,10 @@
-import pyaudio, wave, utils
+import pyaudio, wave, datetime
 
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 512
 REC_SECONDS = 5
 RATE = 44100
-WAV_FILENAME = utils.generate_random_token()
+#WAV_FILENAME = utils.generate_random_token()
+WAV_FILENAME = "Test"+str(datetime.datetime.now())
 FORMAT = pyaudio.paInt16
 
 #init sound stream
@@ -13,7 +14,7 @@ stream = pa.open(
     input = True,
     channels = 1,
     rate = RATE,
-    input_device_index = 7,
+    #input_device_index=2,
     frames_per_buffer = BUFFER_SIZE
 )
 
