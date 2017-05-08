@@ -1,4 +1,6 @@
 import pyaudio, wave, datetime
+from struct import pack
+import wave
 
 BUFFER_SIZE = 512
 REC_SECONDS = 5
@@ -14,7 +16,7 @@ stream = pa.open(
     input = True,
     channels = 1,
     rate = RATE,
-    #input_device_index=2,
+    #input_device_index=1,
     frames_per_buffer = BUFFER_SIZE
 )
 
@@ -30,12 +32,12 @@ stream.stop_stream()
 stream.close()
 pa.terminate()
 
-finaldata = pack('<' + ('h' * len(data_frames)), *data_frames)
+#finaldata = pack('<' + ('h' * len(data_frames)), *data_frames)
 
-wave_file = wave.open(WAV_FILENAME, 'wb')
-wave_file.setnchannels(1)
-wave_file.setsampwidth(BUFFER_SIZE)
-wave_file.setframerate(RATE)
-wave_file.writeframes(finaldata)
-wave_file.close()
+#wave_file = wave.open(WAV_FILENAME, 'wb')
+#wave_file.setnchannels(1)
+#wave_file.setsampwidth(BUFFER_SIZE)
+#wave_file.setframerate(RATE)
+#wave_file.writeframes(finaldata)
+#wave_file.close()
 
