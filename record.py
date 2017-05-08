@@ -24,7 +24,18 @@ data_frames = []
 for f in range(0, RATE/BUFFER_SIZE * REC_SECONDS):
     data = stream.read(BUFFER_SIZE)
     data_frames.append(data)
+
 print('Finished recording...')
 stream.stop_stream()
 stream.close()
 pa.terminate()
+
+finaldata = pack('<' + ('h' * len(data_frames)), *data_frames)
+
+wave_file = wave.open(WAV_FILENAME, 'wb')
+wave_file.setnchannels(1)
+wave_file.setsampwidth(BUFFER_SIZE)
+wave_file.setframerate(RATE)
+wave_file.writeframes(finaldata)
+wave_file.close()
+
