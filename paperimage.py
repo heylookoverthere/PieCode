@@ -52,6 +52,7 @@ happymessages.append("Hello, I am Mr. Face. I am happy to watch you poop.")
 
 pie=getpass.getuser()
 apath="/home/"+pie+"/PieCode/papi/"
+bpath="/home/"+pie+"/"
 
 def wakeface(fakeit):
     if fakeit:
@@ -106,7 +107,9 @@ sleeping=False
 lastinput=datetime.datetime.now()
 starttime=datetime.datetime.now()
 
-uplog=file("uplog.txt","r")
+cpath=bpath+"uplog.txt"
+
+uplog=file(cpath,"r")
 strup=uplog.readline()
 lastup=datetime.datetime.strptime(strup,'%Y-%m-%d %H:%M:%S.%f')
 #lastup=json.load(uplog)

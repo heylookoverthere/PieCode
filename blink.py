@@ -5,7 +5,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(18,GPIO.OUT)
 
 plop=1;
-
+galf=True
 try:
     GPIO.output(18,1)
     while True:
