@@ -19,6 +19,9 @@ import json
 #use sad face. 
 
 
+#ok use events not SLEEP. 
+
+
 
 hatdir="/proc/device-tree/hat/"
 
