@@ -54,7 +54,7 @@ def playTone(p,tone):
 		time.sleep(duration)
 		p.stop()
 
-def run():
+def runsong():
 	p = GPIO.PWM(BuzzerPin, 440)
 	p.start(0.5)
 	for t in SONG:
@@ -67,7 +67,7 @@ def destroy():
 if __name__ == '__main__':     # Program start from here
 	setup()
 	try:
-		run()
+		runsong()
                 GPIO.cleanup()
 	except KeyboardInterrupt:  # When 'Ctrl+C' is pressed, the child program destroy() will be  executed.
 		destroy()

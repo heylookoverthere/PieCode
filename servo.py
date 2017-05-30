@@ -1,8 +1,3 @@
-\
-#So save a list of the beeps in each letter. Just short or long. 
-#Ok so if gap between presses is longer than M, it's a new letter. Longer than N, it's a new word. Longer than Z, it's a new sentence.
-#you should end up with a list of strings like 01 110 01010 010101. 011   
-
 import RPi.GPIO as GPIO
 import datetime
 from time import sleep
