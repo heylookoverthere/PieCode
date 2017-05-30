@@ -4,12 +4,13 @@ import time
 import smbus
 from time import sleep
 GPIO.setmode(GPIO.BCM)
-#GPIO.setup(25,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #
+GPIO.setup(25,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #button 3
 GPIO.setup(23,GPIO.OUT) #Servo
 GPIO.setup(15,GPIO.OUT) #buzzer
+GPIO.setup(24,GPIO.OUT) #relay
 GPIO.setup(27,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)#button 1
 GPIO.setup(17,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #button 2
-
+GPIO.output(24,GPIO.LOW)
 SPEED = 1 
 
 # List of tone-names with frequency
@@ -47,6 +48,9 @@ SONGTWO =	[
 	["c5",4],["eb5",4],["d5",4],["c5",4],["f5",4],["eb5",4]
 	]
 
+SONGOFF =	[
+	["c5",32],["d4",16]
+	]
 
 def playTone(p,tone):
         # calculate duration based on speed and tone-length
@@ -62,9 +66,9 @@ def playTone(p,tone):
 		p.stop()
 
 def runsong():
-	p = GPIO.PWM(BuzzerPin, 440)
+	p = GPIO.PWM(15, 440)
 	p.start(0.5)
-	for t in SONG:
+	for t in SONGTWO:
 		playTone(p,t)
 
 # Define some device parameters for LCD
@@ -81,7 +85,7 @@ LCD_LINE_3 = 0x94 # LCD RAM address for the 3rd line
 LCD_LINE_4 = 0xD4 # LCD RAM address for the 4th line
 
 LCD_BACKLIGHT  = 0x08  # On
-#LCD_BACKLIGHT = 0x00  # Off
+LCD_BACKLIGHT_OFF = 0x00  # Off
 
 ENABLE = 0b00000100 # Enable bit
 
@@ -140,46 +144,95 @@ def lcd_string(message,line):
 
 lcd_init()
 plop=8;
+pwm=GPIO.PWM(23,60)
+pwm.start(8)
+rlay=False
 try:
 	lcd_string("Welcome.",LCD_LINE_1)
 	sleep(2)
 	lcd_string("Red = Servo      ",LCD_LINE_1)
-    lcd_string("Blue = Song      ",LCD_LINE_2)
+        lcd_string("Blue = Song      ",LCD_LINE_2)
 	while(True):
-		if(GPIO.input(27) and GPIO.input(17):
+		if GPIO.input(27) and GPIO.input(17):
 		    lcd_string("Pick one!           ",LCD_LINE_1)
+		    lcd_string("",LCD_LINE_2)
+		    continue
+                elif(GPIO.input(25)):
+                    rlay=not rlay
+                    if(not rlay):
+                        print "relay off"
+                        lcd_string("Relay off           ",LCD_LINE_1)
 			lcd_string("                    ",LCD_LINE_2)
+		        GPIO.output(24,GPIO.LOW)
+		    else:
+		        print "relay on"
+                        lcd_string("Relay on            ",LCD_LINE_1)
+			lcd_string("                    ",LCD_LINE_2)
+		        GPIO.output(24,GPIO.HIGH)
+                    sleep(1)
+	            lcd_string("Red = Servo      ",LCD_LINE_1)
+                    lcd_string("Blue = Song      ",LCD_LINE_2)
 		elif(GPIO.input(27)):
-			pwm=GPIO.PWM(23,60)
-			pwm.start(8)
+                        pwm.ChangeDutyCycle(8)
 			print "Centering"
 			lcd_string("Centering           ",LCD_LINE_1)
 			lcd_string("                    ",LCD_LINE_2)
-			plop=99#int(input("3-13: "))
+			plop=9#int(input("3-13: "))
 			if(plop==99):
 				ploop=0
-				while ploop<2:
+				while ploop<1:
 					for op in xrange(3,14):
 						pwm.ChangeDutyCycle(op)
 						print "moving to "+str(op)
-						lcd_string("Moving to position:",LCD_LINE_1)
+						lcd_string("Moving to pos:   ",LCD_LINE_1)
 						kop=str(op)+"                "
 						lcd_string(kop,LCD_LINE_2)
 						sleep(1)
 					for op in xrange(14,3,-1):
 						pwm.ChangeDutyCycle(op)
 						print "moving to "+str(op)
-						lcd_string("Moving to position:",LCD_LINE_1)
+						lcd_string("Moving to pos:    ",LCD_LINE_1)
 						kop=str(op)+"                "
 						lcd_string(kop,LCD_LINE_2)
 						sleep(1)
 					ploop=ploop+1
-			pwm.stop()     
+			else:
+                                op=8
+                                bail=True
+                                while(bail):
+                                    if GPIO.input(25):
+                                        #pwm.ChangeDutyCycle(8)
+                                        #sleep(1)
+                                        #pwm.stop()
+                                        lcd_string("Red = Servo      ",LCD_LINE_1)
+                                        lcd_string("Blue = Song      ",LCD_LINE_2)
+                                        bail=False
+                                        #continue
+                                    elif GPIO.input(27):
+                                        op-=1
+                                        if op<3:
+                                            op=3
+                                        pwm.ChangeDutyCycle(op)
+				        print "moving to "+str(op)
+				        lcd_string("Moving to pos:   ",LCD_LINE_1)
+				        kop=str(op)+"                "
+				        lcd_string(kop,LCD_LINE_2)
+                                    elif GPIO.input(17):
+                                        op+=1
+                                        if op>14:
+                                           op=14
+                                        pwm.ChangeDutyCycle(op)
+				        print "moving to "+str(op)
+				        lcd_string("Moving to pos:   ",LCD_LINE_1)
+				        kop=str(op)+"                "
+				        lcd_string(kop,LCD_LINE_2)
+			#pwm.stop()     
 			lcd_string("Red = Servo       ",LCD_LINE_1)
 			lcd_string("Blue = Song       ",LCD_LINE_2)
-			#GPIO.cleanup();		
+			#GPIO.cleanup();
+			continue
 		elif(GPIO.input(17)):
-			lcd_string("Playing Song..      ",LCD_LINE_1)
+			lcd_string("Playing Song...      ",LCD_LINE_1)
 			lcd_string("                    ",LCD_LINE_2)
 			runsong();
 			GPIO.output(15, GPIO.HIGH)
@@ -188,18 +241,24 @@ try:
 			sleep(2)
 			lcd_string("Red = Servo         ",LCD_LINE_1)
 			lcd_string("Blue = Song         ",LCD_LINE_2)
+			continue
 finally:
     print "centering..."
-	lcd_string("Centering servo:     ",LCD_LINE_1)
-	lcd_string("                    ",LCD_LINE_2)
+    lcd_string("Centering servo:     ",LCD_LINE_1)
+    lcd_string("                    ",LCD_LINE_2)
     pwm.ChangeDutyCycle(8)
     sleep(1)
-	lcd_string("Goodbye.",LCD_LINE_1)
+    p = GPIO.PWM(15, 440)
+    p.start(0.5)
+    for t in SONGOFF:
+        playTone(p,t)
+    lcd_string("Goodbye.",LCD_LINE_1)
     lcd_string("                    ",LCD_LINE_2)
-	pwm.stop()
-	sleep(1)
-	lcd_byte(0x01, LCD_CMD)
+    pwm.stop()
+    sleep(1)
+    lcd_byte(0x01, LCD_CMD)
     GPIO.output(23,0)
-	GPIO.output(15, GPIO.HIGH)
+    GPIO.output(15, GPIO.HIGH)
+    GPIO.output(24,GPIO.LOW)
     GPIO.cleanup();
 
