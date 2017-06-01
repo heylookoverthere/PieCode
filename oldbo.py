@@ -1,8 +1,3 @@
-import fcntl
-import os
-import termios
-import tty
-import sys
 import RPi.GPIO as GPIO
 import datetime
 import time
@@ -10,15 +5,13 @@ import smbus
 from time import sleep
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(25,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #button 3
-GPIO.setup(18,GPIO.OUT) #Servo
+GPIO.setup(23,GPIO.OUT) #Servo
 GPIO.setup(15,GPIO.OUT) #buzzer
 GPIO.setup(24,GPIO.OUT) #relay
 GPIO.setup(27,GPIO.IN,pull_up_down=GPIO.PUD_DOWN)#button 1
 GPIO.setup(17,GPIO.IN,pull_up_down=GPIO.PUD_DOWN) #button 2
 GPIO.output(24,GPIO.LOW)
 SPEED = 1 
-
-KEYMODE=True
 
 # List of tone-names with frequency
 TONES = {"c6":1047,
@@ -75,7 +68,7 @@ def playTone(p,tone):
 def runsong():
 	p = GPIO.PWM(15, 440)
 	p.start(0.5)
-	for t in SONG:
+	for t in SONGTWO:
 		playTone(p,t)
 
 # Define some device parameters for LCD
@@ -147,45 +140,10 @@ def lcd_string(message,line):
   for i in range(LCD_WIDTH):
     lcd_byte(ord(message[i]),LCD_CHR)
 
-def getch():
-    fd=sys.stdin.fileno()
-    oldterm=termios.tcgetattr(fd)
-    newattr=termios.tcgetattr(fd)
-    newattr[3]=newattr[3] & ~termios.ICANON & ~termios.ECHO
-    termios.tcsetattr(fd,termios.TCSANOW, newattr)
-
-    oldflags=fcntl.fcntl(fd, fcntl.F_GETFL)
-    fcntl.fcntl(fd,fcntl.F_SETFL,oldflags | os.O_NONBLOCK)
-
-    try:
-        while 1:
-	    try:
-	        c=sys.stdin.read(1)
-		break
-	    except IOError: pass
-    finally:
-	termios.tcsetattr(fd,termios.TCSAFLUSH,oldterm)
-	fcntl.fcntl(fd,fcntl.F_SETFL,oldflags)
-    return c
-
-def getKey():
-    fd=sys.stdin.fileno()
-    old = termios.tcgetattr(fd)
-    new = termios.tcgetattr(fd)
-    new[3] = new[3] & ~termios.ICANON & ~termios.ECHO
-    new[6][termios.VMIN]=1
-    new[6][termios.VTIME]=0
-    termios.tcsetattr(fd, termios.TCSANOW, new)
-    key= None
-    try:
-	key=os.read(fd,3)
-    finally:
-	termios.tcsetattr(fd,termios.TCSAFLUSH,old)
-    return key
 
 lcd_init()
 plop=8;
-pwm=GPIO.PWM(18,60)
+pwm=GPIO.PWM(23,60)
 pwm.start(8)
 rlay=False
 try:
@@ -194,18 +152,11 @@ try:
 	lcd_string("Red = Servo      ",LCD_LINE_1)
         lcd_string("Blue = Song      ",LCD_LINE_2)
 	while(True):
-		keyp=0
-		if(KEYMODE):
-		    keyp = getch()
-		#print keyp
-		if(keyp=='b'):
-		    KEYMODE=False;
-		    print "disabling keyboard controls. Use buttons."
 		if GPIO.input(27) and GPIO.input(17):
 		    lcd_string("Pick one!           ",LCD_LINE_1)
 		    lcd_string("",LCD_LINE_2)
 		    continue
-                elif(GPIO.input(25) or keyp=='m'):
+                elif(GPIO.input(25)):
                     rlay=not rlay
                     if(not rlay):
                         print "relay off"
@@ -217,16 +168,16 @@ try:
                         lcd_string("Relay on            ",LCD_LINE_1)
 			lcd_string("                    ",LCD_LINE_2)
 		        GPIO.output(24,GPIO.HIGH)
-                    sleep(2)
+                    sleep(1)
 	            lcd_string("Red = Servo      ",LCD_LINE_1)
                     lcd_string("Blue = Song      ",LCD_LINE_2)
-		elif(GPIO.input(27) or keyp=='t'):
+		elif(GPIO.input(27)):
                         pwm.ChangeDutyCycle(8)
 			print "Centering"
 			lcd_string("Centering           ",LCD_LINE_1)
 			lcd_string("                    ",LCD_LINE_2)
 			plop=9#int(input("3-13: "))
-			if(KEYMODE):#(plop==9):
+			if(plop==99):
 				ploop=0
 				while ploop<1:
 					for op in xrange(3,14):
@@ -279,8 +230,7 @@ try:
 			lcd_string("Blue = Song       ",LCD_LINE_2)
 			#GPIO.cleanup();
 			continue
-		elif(GPIO.input(17) or keyp=='s' ):
-			print "Playing song..."
+		elif(GPIO.input(17)):
 			lcd_string("Playing Song...      ",LCD_LINE_1)
 			lcd_string("                    ",LCD_LINE_2)
 			runsong();
@@ -306,7 +256,7 @@ finally:
     pwm.stop()
     sleep(1)
     lcd_byte(0x01, LCD_CMD)
-    GPIO.output(18,0)
+    GPIO.output(23,0)
     GPIO.output(15, GPIO.HIGH)
     GPIO.output(24,GPIO.LOW)
     GPIO.cleanup();
